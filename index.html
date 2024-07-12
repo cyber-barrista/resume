@@ -2,8 +2,13 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Daniil Chalov</title>
+
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
     <style>
         html,
         body {
@@ -13,17 +18,42 @@
             overflow: hidden;
         }
 
-        iframe {
+        .pdfobject-container {
             width: 100%;
             height: 100%;
             border: none;
             display: block;
         }
     </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.3.0/pdfobject.min.js"
+        integrity="sha512-Nr6NV16pWOefJbWJiT8SrmZwOomToo/84CNd0MN6DxhP5yk8UAoPUjNuBj9KyRYVpESUb14RTef7FKxLVA4WGQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+        </script>
 </head>
 
 <body>
-    <iframe src="dist/resume.pdf" frameborder="0"></iframe>
+    <script>
+        const resumeUrl = 'dist/resume.pdf'
+        const fallbackUi = `
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="bg-white p-6 rounded-lg shadow-lg text-center w-full max-w-md">
+                <p class="mb-4">Looks like your browser may not support viewing PDF files.</p>
+                <p class="mb-4">
+                    Please reopen the link using desktop versions of either Google Chrome, Mozilla Firefox,Microsoft Edge,
+                    Safari, or Opera.
+                </p>
+                <p class="mb-4">Alternatively, feel fre to simply download the resume.</p>
+                <br>
+                <a download href="${resumeUrl}"
+                    class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 w-full sm:w-auto">
+                    Download Daniil's resume
+                </a>
+            </div>
+        </div>
+        `
+        PDFObject.embed(resumeUrl, "body", { fallbackLink: fallbackUi })
+    </script>
 </body>
 
 </html>
