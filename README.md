@@ -5,3 +5,7 @@
 * Run `yarn install-tex-deps`
 * Run `yarn build`
 * There it is, in the `dist` directory
+
+## Currently deployed resume
+
+[Deployed resume](https://cyber-barrista.github.io/resume/)
