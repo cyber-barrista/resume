@@ -1,0 +1,9 @@
+.yarn/
+
+.vscode/
+.idea/
+
+*.log
+
+tex-deps/
+node_modules/

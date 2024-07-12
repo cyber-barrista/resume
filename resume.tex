@@ -1,0 +1,50 @@
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+
+\makeatletter
+\def\input@path{{tex-deps/}}
+\makeatother
+
+\newcommand*{\cvhonortmp}[5][,]{
+  \honordatestyle{#5} & \honorpositionstyle{#2}\ifempty{#3}{}{#1} \honortitlestyle{#3} & \honorlocationstyle{#4} \\
+}
+
+
+\documentclass[11pt, a4paper]{awesome-cv}
+\usepackage{draculatheme}
+
+\geometry{left=1.4cm, top=.8cm, right=1.4cm, bottom=1.8cm, footskip=.5cm}
+\fontdir[fonts/]
+
+\colorlet{awesome}{awesome-red}
+\definecolor{darktext}{HTML}{00D8D8}
+\definecolor{text}{HTML}{FFFFFF}
+\definecolor{graytext}{HTML}{DDDDDD}
+
+\setbool{acvSectionColorHighlight}{true}
+
+\renewcommand{\acvHeaderSocialSep}{\quad\textbar\quad}
+
+\name{Daniil}{Chalov}
+\position{Software Architect{\enskip\cdotp\enskip}Software Engineer{\enskip\cdotp\enskip}DevOps Engineer}
+\address{\href{https://www.google.com/maps/place/Stockholm}{Stockholm, Sweden}}
+
+\email{cyber.barrista@gmail.com}
+\github{cyber-barrista}
+\linkedin{cyber-barrista}
+
+\begin{document}
+
+\makecvheader[C]
+\makecvfooter
+{\today}
+{Daniil Chalov~~~·~~~Resume}
+{\thepage}
+
+\input{resume/summary.tex}
+\input{resume/experience.tex}
+\input{resume/competencies.tex}
+\input{resume/education.tex}
+\input{resume/hobbies.tex}
+
+\end{document}
