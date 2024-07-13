@@ -1,0 +1,62 @@
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+
+\makeatletter
+\def\input@path{{./tex-deps/}}
+\makeatother
+
+\documentclass[11pt, a4paper]{awesome-cv}
+\usepackage{draculatheme}
+
+\geometry{left=1.4cm, top=.8cm, right=1.4cm, bottom=1.8cm, footskip=.5cm}
+\fontdir[fonts/]
+
+\colorlet{awesome}{awesome-red}
+\definecolor{darktext}{HTML}{00D8D8}
+\definecolor{text}{HTML}{FFFFFF}
+\definecolor{graytext}{HTML}{DDDDDD}
+
+\setbool{acvSectionColorHighlight}{true}
+
+\renewcommand{\acvHeaderSocialSep}{\quad\textbar\quad}
+
+\photo[circle,noedge,left]{./cover-letter/profile}
+\name{Daniil}{Chalov}
+\position{Software Architect{\enskip\cdotp\enskip}Software Engineer{\enskip\cdotp\enskip}DevOps Engineer}
+\address{\href{https://www.google.com/maps/place/Stockholm}{Stockholm, Sweden}}
+
+\email{cyber.barrista@gmail.com}
+\github{cyber-barrista}
+\linkedin{cyber-barrista}
+
+\recipient
+  {Company Recruitment Team}
+  {!!addresseeCompany!!}
+\letterdate{\today}
+\lettertitle{Job Application for !!title!!}
+\letteropening{Dear !!addressee!!}
+\letterclosing{Sincerely,}
+\letterenclosure[Attached]{Resume}
+
+
+\begin{document}
+
+\makecvheader[R]
+
+\makecvfooter
+{\today}
+{Daniil Chalov~~~·~~~Cover Letter}
+{\thepage}
+
+\makelettertitle
+
+\begin{cvletter}
+
+	!!content!!
+
+\end{cvletter}
+
+
+\makeletterclosing
+
+\end{document}

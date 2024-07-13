@@ -4,6 +4,8 @@
 .idea/
 
 *.log
+dist/cover-letter-template.pdf
 
 tex-deps/
+cover-letter-workdir/
 node_modules/
