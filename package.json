@@ -15,8 +15,8 @@
         "nodejs-file-downloader": "4.13.0",
         "path": "0.12.7",
         "ts-node": "10.9.2",
-        "typescript": "5.5.3",
-        "yaml": "2.4.5",
+        "typescript": "5.6.3",
+        "yaml": "2.6.0",
         "zod": "3.23.8"
     }
 }
