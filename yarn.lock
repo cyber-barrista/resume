@@ -282,7 +282,7 @@ __metadata:
     ts-node: "npm:10.9.2"
     typescript: "npm:5.8.3"
     yaml: "npm:2.8.0"
-    zod: "npm:3.25.74"
+    zod: "npm:4.0.14"
   languageName: unknown
   linkType: soft
 
@@ -415,9 +415,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:3.25.74":
-  version: 3.25.74
-  resolution: "zod@npm:3.25.74"
-  checksum: 10c0/59e38b046ac333b5bd1ba325a83b6798721227cbfb1e69dfc7159bd7824b904241ab923026edb714fafefec3624265ae374a70aee9a5a45b365bd31781ffa105
+"zod@npm:4.0.14":
+  version: 4.0.14
+  resolution: "zod@npm:4.0.14"
+  checksum: 10c0/ec8681050d393f3be1c2c8f30d7dd4f56bec3746855fb17288be856185a0fe65e68d1b24aec657bbf956f64c05e69332d3751eafd6c103d19385bcc46075612b
   languageName: node
   linkType: hard
