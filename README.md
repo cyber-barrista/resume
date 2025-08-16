@@ -3,7 +3,7 @@
 ### Synopsis
 
 * Get to the repo root
-* Run `nix-shell`
+* Run `nix develop`
 * Run `yarn install-tex-deps`
 * Run `yarn build:resume`
 * There it is, in the `dist` directory
@@ -21,7 +21,7 @@ content: [content of the letter]
 ### Synopsis
 
 * Get to the repo root
-* Run `nix-shell`
+* Run `nix develop`
 * Run `yarn install-tex-deps`
 * Create a work directory `mkdir cover-letter-workdir` (naming matters)
 * Create a config yaml file according to the schema and place it in `cover-letter-workdir` (say it's called `latter-sample.yaml`)
