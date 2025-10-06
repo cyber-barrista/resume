@@ -15,8 +15,8 @@
           src = pkgs.fetchFromGitHub {
             owner = "yarnpkg";
             repo = "berry";
-            rev = "@yarnpkg/cli/4.9.2";
-            sha256 = "sha256-MZB70hgPiQuHHLibhrGZ11vcvtZsCDkqR1NxSq8bXps=";
+            rev = "@yarnpkg/cli/4.10.3";
+            sha256 = "sha256-sPA9XxWuYvxw/eYAsePuHOaaY2jIBRAv5YfDgVUF6YY=";
           };
         });
       in
