@@ -19,5 +19,5 @@
         "yaml": "2.8.1",
         "zod": "4.1.12"
     },
-    "packageManager": "yarn@4.10.3"
+    "packageManager": "yarn@4.11.0"
 }
