@@ -164,14 +164,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:11.3.3":
-  version: 11.3.3
-  resolution: "fs-extra@npm:11.3.3"
+"fs-extra@npm:11.3.4":
+  version: 11.3.4
+  resolution: "fs-extra@npm:11.3.4"
   dependencies:
     graceful-fs: "npm:^4.2.0"
     jsonfile: "npm:^6.0.1"
     universalify: "npm:^2.0.0"
-  checksum: 10c0/984924ff4104e3e9f351b658a864bf3b354b2c90429f57aec0acd12d92c4e6b762cbacacdffb4e745b280adce882e1f980c485d9f02c453f769ab4e7fc646ce3
+  checksum: 10c0/e08276f767a62496ae97d711aaa692c6a478177f24a85979b6a2881c9db9c68b8c2ad5da0bcf92c0b2a474cea6e935ec245656441527958fd8372cb647087df0
   languageName: node
   linkType: hard
 
@@ -276,13 +276,13 @@ __metadata:
   resolution: "resume@workspace:."
   dependencies:
     "@types/fs-extra": "npm:11.0.4"
-    fs-extra: "npm:11.3.3"
+    fs-extra: "npm:11.3.4"
     nodejs-file-downloader: "npm:4.13.0"
     path: "npm:0.12.7"
     ts-node: "npm:10.9.2"
     typescript: "npm:5.9.3"
     yaml: "npm:2.8.2"
-    zod: "npm:4.2.1"
+    zod: "npm:4.3.6"
   languageName: unknown
   linkType: soft
 
@@ -415,9 +415,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:4.2.1":
-  version: 4.2.1
-  resolution: "zod@npm:4.2.1"
-  checksum: 10c0/ecb5219bddf76a42d092a843fb98ad4cb78f1e1077082772b03ef032ee5cbc80790a4051836b962d26fb4af854323bc784d628bd1b8d9898149eba7af21c5560
+"zod@npm:4.3.6":
+  version: 4.3.6
+  resolution: "zod@npm:4.3.6"
+  checksum: 10c0/860d25a81ab41d33aa25f8d0d07b091a04acb426e605f396227a796e9e800c44723ed96d0f53a512b57be3d1520f45bf69c0cb3b378a232a00787a2609625307
   languageName: node
   linkType: hard

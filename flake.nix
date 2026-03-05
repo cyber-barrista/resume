@@ -2,7 +2,7 @@
   description = "DC Resume";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -15,10 +15,17 @@
           src = pkgs.fetchFromGitHub {
             owner = "yarnpkg";
             repo = "berry";
-            rev = "@yarnpkg/cli/4.10.3";
-            sha256 = "sha256-sPA9XxWuYvxw/eYAsePuHOaaY2jIBRAv5YfDgVUF6YY=";
+            rev = "@yarnpkg/cli/4.13.0";
+            sha256 = "sha256-FP15a2ueihDm6f/GdXsnqI5drVHo0EtbmrhCZfRdugQ=";
           };
         });
+
+        fontsConf = pkgs.makeFontsConf {
+          fontDirectories = [
+            pkgs.source-sans
+            pkgs.roboto
+          ];
+        };
       in
       {
         formatter = pkgs.nixpkgs-fmt;
@@ -26,9 +33,12 @@
           default = pkgs.mkShell {
             buildInputs = [
               pkgs.texliveFull
-              pkgs.nodejs_22
-              (customYarnBerry.override { nodejs = pkgs.nodejs_22; })
+              pkgs.nodejs_24
+              (customYarnBerry.override { nodejs = pkgs.nodejs_24; })
             ];
+            shellHook = ''
+              export FONTCONFIG_FILE=${fontsConf}
+            '';
           };
         };
       });

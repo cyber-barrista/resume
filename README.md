@@ -1,3 +1,7 @@
+## Currently deployed resume
+
+[Deployed resume](https://cyber-barrista.github.io/resume/)
+
 ## How to compile a resume
 
 ### Synopsis
@@ -28,7 +32,3 @@ content: [content of the letter]
 * Change you latter picture by replacing `cover-letter/picture.png` file with your own
 * Run `yarn build:letter latter-sample`
 * There it is, generated as `cover-letter-workdir/latter-sample.pdf`
-
-## Currently deployed resume
-
-[Deployed resume](https://cyber-barrista.github.io/resume/)
