@@ -14,7 +14,7 @@
 
 ## How to compile a cover letter
 
-Since cover letters are unique per employer and position the compilation takes in a config `yaml` of a following schema
+Since cover letters are unique per employer and position, the compilation takes in a config `yaml` of a following schema
 
 ```yaml
 title: [target position]
@@ -22,13 +22,14 @@ addresseeCompany: [target company]
 addressee: [entity that will read the letter]
 content: [content of the letter]
 ```
+
 ### Synopsis
 
 * Get to the repo root
 * Run `nix develop`
 * Run `yarn install-tex-deps`
 * Create a work directory `mkdir cover-letter-workdir` (naming matters)
-* Create a config yaml file according to the schema and place it in `cover-letter-workdir` (say it's called `latter-sample.yaml`)
-* Change you latter picture by replacing `cover-letter/picture.png` file with your own
-* Run `yarn build:letter latter-sample`
-* There it is, generated as `cover-letter-workdir/latter-sample.pdf`
+* Create a config yaml file according to the schema and place it in `cover-letter-workdir` (say it's called `letter-sample.yaml`)
+* Change your letter picture by replacing `cover-letter/picture.png` file with your own
+* Run `yarn build:letter letter-sample`
+* There it is, generated as `cover-letter-workdir/letter-sample.pdf`
