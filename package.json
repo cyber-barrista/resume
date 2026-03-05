@@ -7,11 +7,13 @@
         "build:resume": "mkdir -p dist && xelatex -interaction=nonstopmode resume.tex && mv resume.pdf dist/ && rm resume.log; rm resume.aux",
         "build:letter-templ": "mkdir -p dist && xelatex -interaction=nonstopmode cover-letter-template.tex && mv cover-letter-template.pdf dist/ && rm cover-letter-template.log; rm cover-letter-template.aux",
         "build:letter": "ts-node scripts/generate-cover-letter.ts $@",
-        "format": "find . -name '*.tex' -exec latexindent -l latexindent-config.yml -g=/dev/null -o {} {} \\; > /dev/null 2>&1"
+        "format": "find . -name '*.tex' -exec latexindent -l latexindent-config.yml -g=/dev/null -o {} {} \\; > /dev/null 2>&1",
+        "serve": "http-server -p 8080"
     },
     "devDependencies": {
         "@types/fs-extra": "11.0.4",
         "fs-extra": "11.3.4",
+        "http-server": "14.1.1",
         "nodejs-file-downloader": "4.13.0",
         "path": "0.12.7",
         "ts-node": "10.9.2",
