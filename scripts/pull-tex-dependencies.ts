@@ -2,7 +2,7 @@ import { Downloader } from "nodejs-file-downloader";
 import { ensureDir, remove } from "fs-extra"
 
 const gitHubHashVersions = {
-    awesomeCv: "0cd0625f2acb66669cabc79e69b26dd4926d6731",
+    awesomeCv: "36075ed034f7dbb8d3d35ec0cfac725f743fc3e8",
     draculaTheme: "4faa27fe5b34b08f01282faee57c82035cc6039b",
 } as const
 
