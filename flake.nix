@@ -2,22 +2,25 @@
   description = "DC Resume";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
-    flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    flake-utils.url = "github:numtide/flake-utils/11707dc2f618dd54ca8739b309ec4fc024de578b";
+    yarn-berry-src = {
+      url = "github:yarnpkg/berry/@yarnpkg/cli/4.15.0";
+      flake = false;
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils, yarn-berry-src }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
 
+        yarnVersion =
+          (builtins.fromJSON (builtins.readFile "${yarn-berry-src}/packages/yarnpkg-cli/package.json")).version;
+
         customYarnBerry = pkgs.yarn-berry.overrideAttrs (oldAttrs: {
-          src = pkgs.fetchFromGitHub {
-            owner = "yarnpkg";
-            repo = "berry";
-            rev = "@yarnpkg/cli/4.13.0";
-            sha256 = "sha256-FP15a2ueihDm6f/GdXsnqI5drVHo0EtbmrhCZfRdugQ=";
-          };
+          version = yarnVersion;
+          src = yarn-berry-src;
         });
 
         fontsConf = pkgs.makeFontsConf {
