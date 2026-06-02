@@ -15,21 +15,22 @@
       "original": {
         "owner": "numtide",
         "repo": "flake-utils",
+        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
         "type": "github"
       }
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1772598333,
-        "narHash": "sha256-YaHht/C35INEX3DeJQNWjNaTcPjYmBwwjFJ2jdtr+5U=",
+        "lastModified": 1780203844,
+        "narHash": "sha256-K5sT4jTpGs15ADhviMKNBH38REpPf5Q6mM1+N6cArVE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "fabb8c9deee281e50b1065002c9828f2cf7b2239",
+        "rev": "b51242d7d43689db2f3be91bd05d5b24fbb469c4",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-25.11",
+        "ref": "nixos-26.05",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -37,7 +38,8 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "yarn-berry-src": "yarn-berry-src"
       }
     },
     "systems": {
@@ -52,6 +54,23 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "yarn-berry-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1779229240,
+        "narHash": "sha256-B6QHY+cQOZFStuw392XMHRq8Wtl31aemzVQkrP8v2EQ=",
+        "owner": "yarnpkg",
+        "repo": "berry",
+        "rev": "1c018491889b40f4f36d36dee2c7a9032fb862d9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "yarnpkg",
+        "ref": "@yarnpkg/cli/4.15.0",
+        "repo": "berry",
         "type": "github"
       }
     }
