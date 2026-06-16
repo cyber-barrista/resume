@@ -60,16 +60,16 @@
     "yarn-berry-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1779229240,
-        "narHash": "sha256-B6QHY+cQOZFStuw392XMHRq8Wtl31aemzVQkrP8v2EQ=",
+        "lastModified": 1781512124,
+        "narHash": "sha256-zBIXEfjyM3oyF29qNwZ0kLejPt9ybpDgqThQMaiAvZI=",
         "owner": "yarnpkg",
         "repo": "berry",
-        "rev": "1c018491889b40f4f36d36dee2c7a9032fb862d9",
+        "rev": "2d9ef22423bee7824327272ebdd60f336a3cf82c",
         "type": "github"
       },
       "original": {
         "owner": "yarnpkg",
-        "ref": "@yarnpkg/cli/4.15.0",
+        "ref": "@yarnpkg/cli/4.17.0",
         "repo": "berry",
         "type": "github"
       }
