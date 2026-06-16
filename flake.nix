@@ -5,7 +5,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     flake-utils.url = "github:numtide/flake-utils/11707dc2f618dd54ca8739b309ec4fc024de578b";
     yarn-berry-src = {
-      url = "github:yarnpkg/berry/@yarnpkg/cli/4.15.0";
+      url = "github:yarnpkg/berry/@yarnpkg/cli/4.17.0";
       flake = false;
     };
   };
