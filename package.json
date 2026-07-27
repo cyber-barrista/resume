@@ -12,7 +12,7 @@
     },
     "devDependencies": {
         "@types/fs-extra": "11.0.4",
-        "fs-extra": "11.3.5",
+        "fs-extra": "11.4.0",
         "http-server": "14.1.1",
         "nodejs-file-downloader": "4.13.0",
         "path": "0.12.7",
@@ -21,5 +21,5 @@
         "yaml": "2.9.0",
         "zod": "4.4.3"
     },
-    "packageManager": "yarn@4.17.0"
+    "packageManager": "yarn@4.17.1"
 }
