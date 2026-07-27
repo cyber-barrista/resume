@@ -200,6 +200,26 @@
             console.error("Failed to render the resume with PDF.js", error)
             document.querySelector('main').innerHTML = fallbackUi
         })
+
+        //position:fixed pins the button to the layout viewport, but pinch zoom pans a
+        //smaller visual viewport within it, leaving the button glued to the page.
+        //Re-anchor it to the visible bottom-right corner and undo the pinch scale so
+        //its apparent size stays constant.
+        if (window.visualViewport) {
+            const button = document.querySelector('.floating-download')
+            button.style.transformOrigin = 'bottom right'
+
+            const reanchorFloatingButton = () => {
+                const viewport = window.visualViewport
+                const offsetX = viewport.offsetLeft + viewport.width - window.innerWidth
+                const offsetY = viewport.offsetTop + viewport.height - window.innerHeight
+                button.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${1 / viewport.scale})`
+            }
+
+            window.visualViewport.addEventListener('resize', reanchorFloatingButton)
+            window.visualViewport.addEventListener('scroll', reanchorFloatingButton)
+            reanchorFloatingButton()
+        }
     </script>
 </body>
 
