@@ -17,45 +17,189 @@
             overflow: hidden;
         }
 
-        .pdfobject-container {
-            width: 100%;
+        .pdf-pages {
             height: 100%;
-            border: none;
+            overflow-y: auto;
+            background: #404040;
+            padding: 1rem;
+        }
+
+        .pdf-page {
+            position: relative;
+            width: 100%;
+            max-width: 1024px;
+            margin: 0 auto 1rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+        }
+
+        .pdf-page:last-child {
+            margin-bottom: 0;
+        }
+
+        .pdf-page canvas {
             display: block;
+            width: 100%;
+        }
+
+        .pdf-page a {
+            position: absolute;
+        }
+
+        main {
+            height: 100%;
+        }
+
+        .floating-download {
+            position: fixed;
+            right: 1.5rem;
+            bottom: 1.5rem;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+            transition: background-color 0.15s;
+        }
+
+        .floating-download:hover {
+            background-color: #1d4ed8;
+        }
+
+        .floating-download svg {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        .fallback {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 0 1rem;
+            font-family: system-ui, sans-serif;
+        }
+
+        .fallback-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 28rem;
+            box-sizing: border-box;
+        }
+
+        .fallback-card p {
+            margin: 0 0 1rem;
+        }
+
+        .fallback-card a {
+            display: inline-block;
+            margin-top: 1rem;
+            background-color: #3b82f6;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            text-decoration: none;
+        }
+
+        .fallback-card a:hover {
+            background-color: #1d4ed8;
         }
     </style>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.3.1/pdfobject.min.js"
-        integrity="sha512-okdYHqKDXlxPqa15xRbGTv/Dg6TxskmMjtQWlIDMFbblo9/M2uPNowgmBuiDcGMfkE6pWtqPr9PuEWsTPyKWAw=="
-        crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.2.1/dist/index.global.min.js"
-        integrity="sha512-4eteQb9erFCufZywxJ0CDBMwDFE4K1kExBex1b3eUxfQ4dTqyXcLk4QVQQ6vl2xd0jdFOuUP3dEf6O3OL6qLrg=="
+    <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/6.1.200/pdf.min.mjs"
+        integrity="sha512-sHSJ6CnZEYu/9+khtFrRay927A7DQNlTZC1GED8nF75aYrWp7ePaDwBdIHzyOhgUOKR1PguLdSq/ul36xllP/w=="
         crossorigin="anonymous">
     </script>
 </head>
 
 <body>
-    <script>
+    <a class="floating-download" href="dist/resume.pdf" download="Daniil Chalov's Resume.pdf"
+        aria-label="Download Daniil's resume" title="Download Daniil's resume">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+        </svg>
+    </a>
+
+    <main></main>
+
+    <script type="module">
         const resumeUrl = 'dist/resume.pdf'
         const fallbackUi = `
-        <div class="flex items-center justify-center min-h-screen px-4">
-            <div class="bg-white p-6 rounded-lg shadow-lg text-center w-full max-w-md">
-                <p class="mb-4">Looks like your browser may not support viewing PDF files.</p>
-                <p class="mb-4">
-                    Please reopen the link using desktop versions of either Google Chrome, Mozilla Firefox, Microsoft Edge,
-                    Safari, or Opera.
-                </p>
-                <p class="mb-4">Alternatively, feel free to simply download the resume.</p>
-                <br>
-                <a download href="${resumeUrl}"
-                    class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 w-full sm:w-auto">
-                    Download Daniil's resume
-                </a>
+        <div class="fallback">
+            <div class="fallback-card">
+                <p>Looks like the resume viewer failed to load in your browser.</p>
+                <a href="${resumeUrl}">View the resume in your browser's PDF viewer</a>
             </div>
         </div>
         `
-        PDFObject.embed(resumeUrl, "body", { fallbackLink: fallbackUi })
+
+        //A canvas is only pixels: the PDF's link annotations must be recreated as
+        //absolutely positioned <a> overlays, sized in percentages so they track the
+        //canvas when CSS scales it.
+        function overlayLinkAnnotations(wrapper, annotations, viewport) {
+            for (const annotation of annotations) {
+                if (annotation.subtype !== 'Link' || !annotation.url) continue
+
+                const [x1, y1] = viewport.convertToViewportPoint(annotation.rect[0], annotation.rect[1])
+                const [x2, y2] = viewport.convertToViewportPoint(annotation.rect[2], annotation.rect[3])
+                const link = document.createElement('a')
+                link.href = annotation.url
+                link.target = '_blank'
+                link.rel = 'noopener'
+                link.style.left = `${Math.min(x1, x2) / viewport.width * 100}%`
+                link.style.top = `${Math.min(y1, y2) / viewport.height * 100}%`
+                link.style.width = `${Math.abs(x2 - x1) / viewport.width * 100}%`
+                link.style.height = `${Math.abs(y2 - y1) / viewport.height * 100}%`
+                wrapper.appendChild(link)
+            }
+        }
+
+        async function renderResume() {
+            const pdfJsScriptSrc = document.querySelector('script[src$="/pdf.min.mjs"]').src
+            pdfjsLib.GlobalWorkerOptions.workerSrc = pdfJsScriptSrc.replace(/pdf\.min\.mjs$/, "pdf.worker.min.mjs")
+
+            const container = document.createElement('div')
+            container.className = 'pdf-pages'
+            document.querySelector('main').appendChild(container)
+
+            const pdf = await pdfjsLib.getDocument({ url: new URL(resumeUrl, window.location.href).href }).promise
+            const devicePixelRatio = window.devicePixelRatio || 1
+
+            for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+                const page = await pdf.getPage(pageNumber)
+
+                const wrapper = document.createElement('div')
+                wrapper.className = 'pdf-page'
+                container.appendChild(wrapper)
+
+                const scale = wrapper.clientWidth / page.getViewport({ scale: 1 }).width
+                const viewport = page.getViewport({ scale: scale * devicePixelRatio })
+
+                const canvas = document.createElement('canvas')
+                canvas.width = viewport.width
+                canvas.height = viewport.height
+                wrapper.appendChild(canvas)
+
+                await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise
+                overlayLinkAnnotations(wrapper, await page.getAnnotations(), viewport)
+            }
+        }
+
+        renderResume().catch(error => {
+            console.error("Failed to render the resume with PDF.js", error)
+            document.querySelector('main').innerHTML = fallbackUi
+        })
     </script>
 </body>
 
