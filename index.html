@@ -208,12 +208,16 @@
         if (window.visualViewport) {
             const button = document.querySelector('.floating-download')
             button.style.transformOrigin = 'bottom right'
+            const margin = parseFloat(getComputedStyle(button).right)
 
             const reanchorFloatingButton = () => {
                 const viewport = window.visualViewport
-                const offsetX = viewport.offsetLeft + viewport.width - window.innerWidth
-                const offsetY = viewport.offsetTop + viewport.height - window.innerHeight
-                button.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${1 / viewport.scale})`
+                const inverseScale = 1 / viewport.scale
+                //the margin is also counter-scaled so it stays constant in screen pixels
+                const marginShift = margin * (1 - inverseScale)
+                const offsetX = viewport.offsetLeft + viewport.width - window.innerWidth + marginShift
+                const offsetY = viewport.offsetTop + viewport.height - window.innerHeight + marginShift
+                button.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${inverseScale})`
             }
 
             window.visualViewport.addEventListener('resize', reanchorFloatingButton)
