@@ -1,9 +1,8 @@
-name: Site
+name: Main
 
 on:
   push:
     branches: [main]
-  pull_request:
   workflow_dispatch:
     inputs:
       force:
@@ -14,9 +13,11 @@ on:
 permissions:
   contents: read
 
+# One deploy at a time; a run already deploying is left to finish rather than
+# cancelled, the next one queues behind it.
 concurrency:
-  group: site-${{ github.ref }}
-  cancel-in-progress: true
+  group: pages
+  cancel-in-progress: false
 
 env:
   SITE_URL: https://cyber-barrista.github.io/resume
@@ -56,9 +57,12 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # Format, lint and typecheck of the renderer (modules/renderer/default.nix);
-      # always, so a PR cannot regress them behind an unchanged site.
-      - run: nix flake check -L
+      # PRs ran the checks already (pr.yml); here they guard direct pushes. An
+      # unchanged site id means unchanged renderer sources, so when the deploy
+      # is skipped the checks would only repeat a result already known.
+      - name: Check
+        if: steps.check.outputs.skip != 'true'
+        run: nix flake check -L
 
       # The resume PDF rendered into the static site (modules/site.nix).
       - name: Build the site
@@ -83,7 +87,7 @@ jobs:
         run: echo "Build ${{ steps.build-id.outputs.id }} is already live — nothing to deploy."
 
   deploy:
-    if: github.ref == 'refs/heads/main' && needs.build.outputs.skip != 'true'
+    if: needs.build.outputs.skip != 'true'
     needs: build
     runs-on: ubuntu-26.04
     permissions:

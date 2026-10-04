@@ -30,7 +30,8 @@ one file per feature.
 | `modules/renderer/` | `packages.pdf-renderer` (the PDF-agnostic app) and `pdfRenderer { pdf, fileName, downloadName, title }` → static site (also `legacyPackages.pdfRenderer` for other flakes); `checks.renderer`; the Vite app, `pnpm-lock.yaml`, `pnpm-workspace.yaml` (pnpm settings) |
 | `modules/site.nix` | `packages.site` = `pdfRenderer { pdf = packages.resume; ... }` with the resume's names, also `packages.default` |
 | `modules/dev-shell.nix` | `nix develop`: TeX + Node toolchains with `tex.env` exported |
-| `.github/workflows/site.yml` | `nix flake check`; on `main`, `nix build .#site` and deploy to GitHub Pages — skipped when the live site already has this build (see Deploy) |
+| `.github/workflows/pr.yml` | every PR: `nix flake check` and a `nix build .#site` that proves the site builds |
+| `.github/workflows/main.yml` | pushes to `main`: build and deploy to GitHub Pages, skipped when the live site already has this build (see Deploy) |
 | `renovate.json` | root on purpose: repo-level infra |
 
 ## Toolchain
@@ -66,7 +67,8 @@ one file per feature.
 
 ## Deploy (GitHub Pages)
 
-- `.github/workflows/site.yml` computes the site's **nix store path by pure `nix eval`** (no build), compares its
+- `.github/workflows/pr.yml` verifies pull requests (checks + site build, nothing kept); `.github/workflows/main.yml`
+  deploys: it computes the site's **nix store path by pure `nix eval`** (no build), compares its
   hash with the `build-id.txt` the previous deploy left next to `index.html`, and only builds and deploys when they
   differ — doc/CI edits are no-ops. Any curl failure fails open (deploys). `workflow_dispatch` has a `force` input
   to redeploy an unchanged build (after a Pages settings change, say).

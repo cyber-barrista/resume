@@ -10,7 +10,7 @@ Everything is built by Nix. The flake has three modules (see `modules/`):
 | `cover-letter` | a CLI that turns a YAML into a cover letter PDF | `nix run .#cover-letter -- letter.yaml` |
 | `pdfRenderer` | a function from any PDF to a static web site showing it | `nix build .#site` (the resume rendered) |
 
-Every push to `main` builds `.#site` and deploys it to GitHub Pages. Other flakes can render their own PDF with
+Every PR runs the checks and builds the site; every push to `main` builds `.#site` and deploys it to GitHub Pages. Other flakes can render their own PDF with
 `inputs.resume.legacyPackages.${system}.pdfRenderer { pdf = <PDF file or derivation>; fileName = ...; downloadName = ...; title = ...; }`;
 the app itself (`nix build .#pdf-renderer`) is PDF-agnostic and reads the document from `data-*` attributes in
 its `index.html`.
