@@ -1,0 +1,97 @@
+name: Site
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Deploy even if the live site already has this build (e.g. after a Pages settings change)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SITE_URL: https://cyber-barrista.github.io/resume
+
+jobs:
+  build:
+    # Pinned image, not ubuntu-latest (which GitHub re-points): bump deliberately.
+    runs-on: ubuntu-26.04
+    outputs:
+      skip: ${{ steps.check.outputs.skip }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      # pinned by commit: the action publishes only major tags (v23), which can move
+      - uses: DeterminateSystems/nix-installer-action@3138316df39ed29be04236d7ffc686fa525866aa # v23
+
+      # The site's store path is a hash of everything that goes into it (the
+      # TeX sources, the renderer app, nixpkgs); doc/CI edits are outside the
+      # filesets in modules/, so they leave it unchanged. Pure eval, no build.
+      - name: Compute build id
+        id: build-id
+        run: echo "id=$(nix eval --raw .#site.outPath | xargs basename)" >> "$GITHUB_OUTPUT"
+
+      # The deployed site carries its build id in build-id.txt (written below).
+      # Same id live -> nothing to build or deploy. Any curl failure (first
+      # deploy, Pages down) leaves `current` empty, so we fail open and deploy.
+      - name: Check the live site
+        id: check
+        env:
+          FORCE: ${{ inputs.force }}
+        run: |
+          current=$(curl -fsSL "$SITE_URL/build-id.txt" 2>/dev/null || true)
+          echo "live build id: ${current:-<none>}"
+          echo "this build id: ${{ steps.build-id.outputs.id }}"
+          if [ "$FORCE" != "true" ] && [ -n "$current" ] && [ "$current" = "${{ steps.build-id.outputs.id }}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Format, lint and typecheck of the renderer (modules/renderer/default.nix);
+      # always, so a PR cannot regress them behind an unchanged site.
+      - run: nix flake check -L
+
+      # The resume PDF rendered into the static site (modules/site.nix).
+      - name: Build the site
+        if: steps.check.outputs.skip != 'true'
+        run: nix build .#site -L
+
+      # `result` is a symlink into the read-only store; the artifact wants a
+      # real directory, and build-id.txt is deploy metadata, not site content.
+      - name: Prepare the Pages artifact
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          cp -rL result site
+          chmod -R u+w site
+          echo "${{ steps.build-id.outputs.id }}" > site/build-id.txt
+      - uses: actions/upload-pages-artifact@v5.0.0
+        if: steps.check.outputs.skip != 'true'
+        with:
+          path: site
+
+      - name: Skipped (site unchanged)
+        if: steps.check.outputs.skip == 'true'
+        run: echo "Build ${{ steps.build-id.outputs.id }} is already live — nothing to deploy."
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && needs.build.outputs.skip != 'true'
+    needs: build
+    runs-on: ubuntu-26.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5.0.1

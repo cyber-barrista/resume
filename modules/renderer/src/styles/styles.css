@@ -1,0 +1,20 @@
+:root {
+  --backdrop: #404040;
+  --surface: #1f2937;
+  --surface-hover: #374151;
+  --accent: #3b82f6;
+  --accent-hover: #1d4ed8;
+  --muted: #9ca3af;
+  --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+main {
+  height: 100%;
+}

@@ -1,0 +1,9 @@
+/* Viewport sets width/height 100%, overflow and padding inline; border-box keeps the padding inside the width */
+.pages {
+  box-sizing: border-box;
+  background: var(--backdrop);
+}
+
+.page {
+  box-shadow: var(--shadow);
+}

@@ -1,0 +1,9 @@
+# pnpm settings (pnpm >= 10 reads them here, not from package.json).
+
+# Fetch the platform-specific binaries (biome, rolldown, typescript, ...) for
+# exactly the systems the flake builds for, whatever machine runs the install:
+# this keeps the Nix offline store identical across build hosts (default.nix).
+supportedArchitectures:
+  os: [darwin, linux]
+  cpu: [x64, arm64]
+  libc: [glibc]
