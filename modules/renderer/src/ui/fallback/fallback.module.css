@@ -1,0 +1,39 @@
+.fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 1rem;
+  font-family: system-ui, sans-serif;
+}
+
+.card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  text-align: center;
+  width: 100%;
+  max-width: 28rem;
+  box-sizing: border-box;
+}
+
+.card p {
+  margin: 0 0 1rem;
+}
+
+.card a {
+  display: inline-block;
+  margin-top: 1rem;
+  background-color: var(--accent);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  text-decoration: none;
+}
+
+.card a:hover {
+  background-color: var(--accent-hover);
+}

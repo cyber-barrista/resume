@@ -1,17 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
+  "extends": ["config:recommended"],
   "rangeStrategy": "pin",
   "commitMessagePrefix": "[Common] ",
   "prConcurrentLimit": 3,
-  "labels": [
-    "common"
-  ],
-  "schedule": [
-    "on the 15th day of the month"
-  ],
+  "labels": ["common"],
+  "schedule": ["on the 15th day of the month"],
+  "separateMajorMinor": false,
   "lockFileMaintenance": {
     "enabled": true
   },
@@ -22,13 +17,18 @@
       }
     },
     {
-      "matchUpdateTypes": [
-        "*"
-      ],
-      "groupName": "all",
-      "matchPackageNames": [
-        "*"
-      ]
+      "description": "pnpm comes from nixpkgs: modules/node.nix asserts that packageManager matches it, so it moves with `nix flake update`, never with Renovate",
+      "matchDepTypes": ["packageManager"],
+      "enabled": false
+    },
+    {
+      "description": "Node is pinned to 26 in modules/node.nix; keep its types on the same major",
+      "matchDepNames": ["@types/node"],
+      "allowedVersions": "<27"
+    },
+    {
+      "matchUpdateTypes": ["*"],
+      "groupName": "all"
     }
   ]
 }

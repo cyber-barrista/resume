@@ -1,17 +1,12 @@
 %!TEX TS-program = xelatex
 %!TEX encoding = UTF-8 Unicode
 
-\makeatletter
-\def\input@path{{tex-deps/}}
-\makeatother
-
-\newcommand*{\cvhonortmp}[5][,]{
-  \honordatestyle{#5} & \honorpositionstyle{#2}\ifempty{#3}{}{#1} \honortitlestyle{#3} & \honorlocationstyle{#4} \\
-}
-
-
 \documentclass[11pt, a4paper]{awesome-cv}
 \usepackage{draculatheme}
+
+% \letterTitle, \letterAddresseeCompany, \letterAddressee and \letterContent,
+% generated from the YAML by the cover-letter CLI (default.nix)
+\input{letter-vars}
 
 \geometry{left=1.4cm, top=.8cm, right=1.4cm, bottom=1.8cm, footskip=.5cm}
 \fontdir[fonts/]
@@ -25,6 +20,7 @@
 
 \renewcommand{\acvHeaderSocialSep}{\quad\textbar\quad}
 
+\photo[circle,noedge,left]{profile}
 \name{Daniil}{Chalov}
 \position{Software Architect{\enskip\cdotp\enskip}Software Engineer{\enskip\cdotp\enskip}DevOps Engineer}
 \address{\href{https://www.google.com/maps/place/Stockholm}{Stockholm, Sweden}}
@@ -33,18 +29,34 @@
 \github{cyber-barrista}
 \linkedin{cyber-barrista}
 
+\recipient
+  {Company Recruitment Team}
+  {\letterAddresseeCompany}
+\letterdate{\today}
+\lettertitle{Job Application for \letterTitle}
+\letteropening{Dear \letterAddressee}
+\letterclosing{Sincerely,}
+\letterenclosure[Attached]{Resume}
+
+
 \begin{document}
 
-\makecvheader[C]
+\makecvheader[R]
+
 \makecvfooter
 {\today}
-{Daniil Chalov~~~·~~~Resume}
+{Daniil Chalov~~~·~~~Cover Letter}
 {\thepage}
 
-\input{resume/summary.tex}
-\input{resume/experience.tex}
-\input{resume/competencies.tex}
-\input{resume/education.tex}
-\input{resume/hobbies.tex}
+\makelettertitle
+
+\begin{cvletter}
+
+	\letterContent
+
+\end{cvletter}
+
+
+\makeletterclosing
 
 \end{document}

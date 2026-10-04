@@ -1,11 +1,18 @@
-.yarn/
-
 .vscode/
 .idea/
 
 *.log
-dist/cover-letter-template.pdf
 
-tex-deps/
 cover-letter-workdir/
 node_modules/
+
+dist/
+.nix/
+
+# any PDF for `pnpm dev` in the renderer
+modules/renderer/public/document.pdf
+
+# nix build out-links (`result`, `result-<output>`) and the nix-direnv cache
+result
+result-*
+.direnv/
