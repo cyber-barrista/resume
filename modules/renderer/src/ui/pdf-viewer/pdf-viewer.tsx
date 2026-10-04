@@ -55,7 +55,14 @@ const PdfViewer: React.FC<Props> = ({ engine, plugins, url, dpr, isSearchOpen, o
                             onDragStart={(event: DragEvent<HTMLDivElement>): void => event.preventDefault()}
                           >
                             <RenderLayer documentId={activeDocumentId} pageIndex={pageIndex} dpr={dpr} />
-                            <SearchLayer documentId={activeDocumentId} pageIndex={pageIndex} />
+                            <SearchLayer
+                              documentId={activeDocumentId}
+                              pageIndex={pageIndex}
+                              className={classes.searchLayer}
+                              // translucent, since the box sits over the text: strong enough to mark, light enough to read through
+                              highlightColor="rgba(255, 255, 0, 0.3)"
+                              activeHighlightColor="rgba(255, 191, 0, 0.5)"
+                            />
                             <SelectionLayer documentId={activeDocumentId} pageIndex={pageIndex} />
                             <AnnotationLayer documentId={activeDocumentId} pageIndex={pageIndex} />
                           </PagePointerProvider>

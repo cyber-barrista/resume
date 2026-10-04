@@ -7,3 +7,12 @@
 .page {
   box-shadow: var(--shadow);
 }
+
+/* EmbedPDF draws search highlights with an inline `mix-blend-mode: multiply`,
+   which assumes a white page: on a dark document multiplying yellow onto the
+   background changes nothing and the matches vanish. A translucent highlight
+   in normal blending reads on light and dark documents alike. */
+.searchLayer > div {
+  /* biome-ignore lint/complexity/noImportantStyles: the blend mode is an inline style, only !important beats it */
+  mix-blend-mode: normal !important;
+}
