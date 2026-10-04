@@ -2,7 +2,6 @@ import { useExport } from '@embedpdf/plugin-export/react';
 import { useFullscreen } from '@embedpdf/plugin-fullscreen/react';
 import { usePrint } from '@embedpdf/plugin-print/react';
 import type React from 'react';
-import { useMemo } from 'react';
 
 import ToolbarLogicLayer from 'src/ui/toolbar/toolbar-logic-layer';
 
@@ -20,20 +19,11 @@ const ToolbarDataLayer: React.FC<Props> = ({ documentId, onSearch }) => {
   } = useFullscreen();
 
   // each action is undefined until its plugin is ready, which hides its button
-  const onDownload = useMemo(
-    (): (() => void) | undefined => (exporter ? (): void => exporter.download() : undefined),
-    [exporter],
-  );
-  const onPrint = useMemo(
-    (): (() => void) | undefined => (printer ? (): void => void printer.print() : undefined),
-    [printer],
-  );
+  const onDownload = exporter ? (): void => exporter.download() : undefined;
+  const onPrint = printer ? (): void => void printer.print() : undefined;
   // iPhone Safari has no element fullscreen
-  const onToggleFullscreen = useMemo(
-    (): (() => void) | undefined =>
-      fullscreen && document.fullscreenEnabled ? (): void => fullscreen.toggleFullscreen() : undefined,
-    [fullscreen],
-  );
+  const onToggleFullscreen =
+    fullscreen && document.fullscreenEnabled ? (): void => fullscreen.toggleFullscreen() : undefined;
 
   return (
     <ToolbarLogicLayer

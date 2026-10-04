@@ -1,7 +1,7 @@
 import type { PluginBatchRegistrations } from '@embedpdf/core';
 import type { PdfEngine } from '@embedpdf/models';
 import type React from 'react';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import PdfViewer from 'src/ui/pdf-viewer/pdf-viewer';
 
@@ -14,9 +14,9 @@ type Props = {
 
 const PdfViewerLogicLayer: React.FC<Props> = ({ engine, plugins, url, dpr }) => {
   const [isSearchOpen, setSearchOpen] = useState(false);
-  // stable, so the toolbar's keyboard listener isn't re-registered on every render
-  const openSearch = useCallback((): void => setSearchOpen(true), []);
-  const closeSearch = useCallback((): void => setSearchOpen(false), []);
+  // the React Compiler keeps these stable, so the toolbar's keyboard listener is registered once
+  const openSearch = (): void => setSearchOpen(true);
+  const closeSearch = (): void => setSearchOpen(false);
 
   return (
     <PdfViewer

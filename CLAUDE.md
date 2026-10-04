@@ -90,9 +90,13 @@ Shared with handy-surf:
 - **Files**: kebab-case. One component per folder under `src/ui/<component>/`, with its styles next to it as
   `<component>.module.css`. Global reset and the colour/shadow custom properties live in `src/styles/styles.css`.
 - **Components**: arrow functions typed `React.FC<Props>`, `type Props` (never `interface`), default export at the end.
-- **Layers**: `*-data-layer.tsx` reads EmbedPDF capabilities and hands plain values and callbacks down (memoised so
-  they stay stable); `*-logic-layer.tsx` owns state, effects and handlers; `<component>.tsx` is presentation only,
-  props in, no hooks. Skip a layer when it has nothing to do; import the outermost layer.
+- **Layers**: `*-data-layer.tsx` reads EmbedPDF capabilities and hands plain values and callbacks down;
+  `*-logic-layer.tsx` owns state, effects and handlers; `<component>.tsx` is presentation only, props in, no hooks.
+  Skip a layer when it has nothing to do; import the outermost layer.
+- **No `useMemo`/`useCallback`**: the React Compiler (`oxc-transform-react`, the Rust port, enabled in
+  `vite.config.ts` with `logDiagnostics`) memoises values and callbacks on their inputs, which is what keeps effect
+  dependencies stable. A diagnostic in the build output means a component broke the Rules of React and lost that;
+  fix the component rather than adding manual memoisation.
 - **Types**: strict, no `any`, explicit return types on every function, including inline JSX callbacks
   (`onClick={(): void => ...}`); index access returns `T | undefined`, so check it.
 

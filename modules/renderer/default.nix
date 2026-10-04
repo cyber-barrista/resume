@@ -61,7 +61,7 @@ in
         inherit src pnpm;
         fetcherVersion = 3;
         pnpmInstallFlags = [ "--no-force" ];
-        hash = "sha256-tCa8Tnt9LwM7fl06EneFsZYYeqEDGXEDnssgqfQV/ls=";
+        hash = "sha256-mOm0qHprJHDhb3ez5nJ3VgxVhkLbyM9B3yZfJEO9sTg=";
       };
 
       # Source plus an offline `pnpm install`; `args` adds the phases.

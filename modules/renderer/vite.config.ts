@@ -7,7 +7,11 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   // relative, so the site works from any sub-path (GitHub Pages serves it under /<repo>/)
   base: './',
-  plugins: [react()],
+  // React Compiler through oxc-transform-react (the Rust port, no Babel): it
+  // memoises values and callbacks on their inputs, so the components carry no
+  // useMemo/useCallback of their own. Diagnostics surface components it had to
+  // skip, which would silently lose that memoisation.
+  plugins: [react({ compiler: { logDiagnostics: true } })],
   // resolves the `src/*` paths from tsconfig.json (native since Vite 8, no plugin needed)
   resolve: { tsconfigPaths: true },
   // EmbedPDF's viewer and plugins are one ~600 kB chunk the whole page depends on, splitting gains nothing
