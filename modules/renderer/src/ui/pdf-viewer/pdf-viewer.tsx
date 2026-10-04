@@ -24,12 +24,13 @@ type Props = {
   engine: PdfEngine;
   plugins: PluginBatchRegistrations;
   url: string;
+  dpr: number;
   isSearchOpen: boolean;
   onOpenSearch: () => void;
   onCloseSearch: () => void;
 };
 
-const PdfViewer: React.FC<Props> = ({ engine, plugins, url, isSearchOpen, onOpenSearch, onCloseSearch }) => (
+const PdfViewer: React.FC<Props> = ({ engine, plugins, url, dpr, isSearchOpen, onOpenSearch, onCloseSearch }) => (
   <EmbedPDF engine={engine} plugins={plugins}>
     {({ activeDocumentId }: PDFContextState): ReactNode =>
       activeDocumentId && (
@@ -53,7 +54,7 @@ const PdfViewer: React.FC<Props> = ({ engine, plugins, url, isSearchOpen, onOpen
                             // pages are images: a native image drag would cancel text selection
                             onDragStart={(event: DragEvent<HTMLDivElement>): void => event.preventDefault()}
                           >
-                            <RenderLayer documentId={activeDocumentId} pageIndex={pageIndex} />
+                            <RenderLayer documentId={activeDocumentId} pageIndex={pageIndex} dpr={dpr} />
                             <SearchLayer documentId={activeDocumentId} pageIndex={pageIndex} />
                             <SelectionLayer documentId={activeDocumentId} pageIndex={pageIndex} />
                             <AnnotationLayer documentId={activeDocumentId} pageIndex={pageIndex} />

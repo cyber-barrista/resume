@@ -9,9 +9,10 @@ type Props = {
   engine: PdfEngine;
   plugins: PluginBatchRegistrations;
   url: string;
+  dpr: number;
 };
 
-const PdfViewerLogicLayer: React.FC<Props> = ({ engine, plugins, url }) => {
+const PdfViewerLogicLayer: React.FC<Props> = ({ engine, plugins, url, dpr }) => {
   const [isSearchOpen, setSearchOpen] = useState(false);
   // stable, so the toolbar's keyboard listener isn't re-registered on every render
   const openSearch = useCallback((): void => setSearchOpen(true), []);
@@ -22,6 +23,7 @@ const PdfViewerLogicLayer: React.FC<Props> = ({ engine, plugins, url }) => {
       engine={engine}
       plugins={plugins}
       url={url}
+      dpr={dpr}
       isSearchOpen={isSearchOpen}
       onOpenSearch={openSearch}
       onCloseSearch={closeSearch}
