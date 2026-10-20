@@ -56,12 +56,14 @@
           cp "$COVER_LETTER_ASSETS"/template.tex "$workdir/letter.tex"
           cp "$COVER_LETTER_ASSETS"/profile.png "$workdir/"
 
-          # xelatex resolves \input and the photo through TEXINPUTS; the
+          # lualatex resolves \input and the photo through TEXINPUTS; the
           # workdir goes first so the generated macros are found.
           export TEXINPUTS="$workdir:$TEXINPUTS"
-          if ! xelatex -interaction=nonstopmode -halt-on-error -output-directory="$workdir" \
-              "$workdir/letter.tex" > "$workdir/xelatex.log" 2>&1; then
-            cat "$workdir/xelatex.log" >&2
+          # LuaTeX dates \today by SOURCE_DATE_EPOCH, which `nix develop` pins to 1980
+          unset SOURCE_DATE_EPOCH
+          if ! lualatex -interaction=nonstopmode -halt-on-error -output-directory="$workdir" \
+              "$workdir/letter.tex" > "$workdir/lualatex.log" 2>&1; then
+            cat "$workdir/lualatex.log" >&2
             exit 1
           fi
 

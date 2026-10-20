@@ -24,9 +24,12 @@
 
         buildPhase = ''
           runHook preBuild
-          # xelatex writes font caches under HOME
+          # luaotfload writes its font name database under HOME
           export HOME=$TMPDIR
-          xelatex -interaction=nonstopmode -halt-on-error resume.tex
+          # LuaTeX dates \today by SOURCE_DATE_EPOCH, which stdenv pins to
+          # 1980; the footer shows the build date.
+          unset SOURCE_DATE_EPOCH
+          lualatex -interaction=nonstopmode -halt-on-error resume.tex
           runHook postBuild
         '';
 

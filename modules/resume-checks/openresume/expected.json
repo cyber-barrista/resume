@@ -1,0 +1,36 @@
+{
+  "profile": {
+    "name": "Daniil Chalov",
+    "email": "cyber.barrista@gmail.com",
+    "url": "linkedin.com/in/cyber-barrista"
+  },
+  "workExperiences": [
+    {
+      "company": "Evolution",
+      "jobTitle": "Full Stack Engineer, Backend Engineer",
+      "date": "Dec 2024 – Present"
+    },
+    {
+      "company": "Klarna",
+      "jobTitle": "Software Architect, Software Engineer",
+      "date": "Apr 2022 – Dec 2024"
+    },
+    {
+      "company": "DSR Corporation",
+      "jobTitle": "Software Architect, Software Engineer",
+      "date": "Oct. 2019 – Apr. 2022"
+    },
+    {
+      "company": "Voronezh State University",
+      "jobTitle": "Theoretical Physics Lab Assistant",
+      "date": "Jan. 2019 – Oct. 2019"
+    }
+  ],
+  "educations": [
+    {
+      "school": "Voronezh State University",
+      "degree": "B.S. in Theoretical Physics",
+      "date": "2016 – 2020"
+    }
+  ]
+}

@@ -10,7 +10,7 @@
       options.tex = {
         texlive = lib.mkOption {
           type = lib.types.package;
-          description = "TeX distribution providing xelatex and every package awesome-cv pulls in.";
+          description = "TeX distribution providing lualatex and every package awesome-cv pulls in.";
         };
         deps = lib.mkOption {
           type = lib.types.package;
@@ -18,7 +18,7 @@
         };
         env = lib.mkOption {
           type = lib.types.attrsOf lib.types.str;
-          description = "Environment that makes xelatex find the fonts and `tex.deps`, for builds and the dev shell alike.";
+          description = "Environment that makes lualatex find the fonts and `tex.deps`, for builds and the dev shell alike.";
         };
       };
 
@@ -31,10 +31,17 @@
         deps = pkgs.linkFarm "tex-deps" [
           {
             name = "awesome-cv.cls";
-            path = pkgs.fetchurl {
-              url = "https://raw.githubusercontent.com/posquit0/Awesome-CV/6701180c71479588dae5d895c4a10a6a572a40a0/awesome-cv.cls";
-              hash = "sha256-6WGgxtczDL+40t4x4eYhnTD4Jt8BllIBtUD1aV3Dd+0=";
-            };
+            # Node mode for text, the class's HarfBuzz only for small caps:
+            # node mode extracts hyphens as "-" but small caps as capitals,
+            # HarfBuzz the other way round (CLAUDE.md, Text layer).
+            path = pkgs.runCommand "awesome-cv.cls" { } ''
+              substitute ${
+                pkgs.fetchurl {
+                  url = "https://raw.githubusercontent.com/posquit0/Awesome-CV/6701180c71479588dae5d895c4a10a6a572a40a0/awesome-cv.cls";
+                  hash = "sha256-6WGgxtczDL+40t4x4eYhnTD4Jt8BllIBtUD1aV3Dd+0=";
+                }
+              } $out --replace-fail 'Renderer=HarfBuzz,' 'Renderer=Node, SmallCapsFeatures={Renderer=HarfBuzz},'
+            '';
           }
           {
             name = "draculatheme.sty";
@@ -46,16 +53,10 @@
         ];
 
         env = {
-          # The fonts awesome-cv is configured with, resolved by fontconfig
-          # instead of texlive's own font files.
-          FONTCONFIG_FILE = toString (
-            pkgs.makeFontsConf {
-              fontDirectories = [
-                pkgs.source-sans
-                pkgs.roboto
-              ];
-            }
-          );
+          # Source Sans 3, which texlive lacks (it ships the older Source
+          # Sans Pro), for luaotfload, which does not read fontconfig. Roboto
+          # and FontAwesome come from texlive.
+          OSFONTDIR = "${pkgs.source-sans}/share/fonts//";
           # The trailing colon keeps texlive's default search path; the
           # documents themselves need no \input@path tricks.
           TEXINPUTS = ".:${config.tex.deps}:";

@@ -1,4 +1,4 @@
-%!TEX TS-program = xelatex
+%!TEX TS-program = lualatex
 %!TEX encoding = UTF-8 Unicode
 
 \newcommand*{\cvhonortmp}[5][,]{
@@ -8,6 +8,7 @@
 
 \documentclass[11pt, a4paper]{awesome-cv}
 \usepackage{draculatheme}
+\input{parser-only}
 
 \geometry{left=1.4cm, top=.8cm, right=1.4cm, bottom=1.8cm, footskip=.5cm}
 \fontdir[fonts/]
@@ -18,6 +19,15 @@
 \definecolor{graytext}{HTML}{DDDDDD}
 
 \setbool{acvSectionColorHighlight}{true}
+
+% A heading stranded at the foot of a page, with its section on the next, also reads wrong to parsers: the page's
+% footer lands between the two.
+\usepackage{needspace}
+\pretocmd{\cvsection}{\needspace{6\baselineskip}}{}{\errmessage{could not patch \string\cvsection}}
+
+% Never break a line at a typed hyphen: extractors cannot tell it from TeX's own hyphenation, so "well-" at a line end
+% comes out as "wellrounded" (pdftotext) or "well- rounded" (pdf.js). TeX still hyphenates long words where it has to.
+\exhyphenpenalty=10000
 
 \renewcommand{\acvHeaderSocialSep}{\quad\textbar\quad}
 

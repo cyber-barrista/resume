@@ -11,8 +11,8 @@
           config.node.pnpm
           pkgs.yq-go
         ];
-        # xelatex finds the fonts and the class from any directory, e.g.
-        # `xelatex modules/resume/resume.tex` while editing.
+        # lualatex finds the fonts and the class from any directory, e.g.
+        # `lualatex modules/resume/resume.tex` while editing.
         env = config.tex.env;
       };
     };

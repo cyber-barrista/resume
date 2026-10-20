@@ -1,0 +1,23 @@
+% Text for resume parsers only: in the PDF's text layer, never drawn. \input in the preamble of resume.tex.
+%
+% PDF text rendering mode 3 (Invisible), as in OCR'd scans, set through pdfrender. The shipout/background hook places
+% it: it takes no room in the layout, and it comes first in the page's content stream, the order OpenResume
+% (modules/resume-checks) reads in. It sits in the empty top-left corner, where a select-all highlight overlaps nothing.
+\RequirePackage{pdfrender}
+\newcommand*{\parseronly}[1]{\textpdfrender{TextRenderingMode=Invisible}{#1}}
+
+% Every page starts with the full name. On the first page it is the profile's name: the visible one is two text runs,
+% light "Daniil" and bold "Chalov", which parsers take apart. It is bold: OpenResume scores bold text higher as a name.
+% On later pages it ends the previous page's last line: OpenResume joins pages with no line break, so a page's first
+% line, a section title say, would join the footer above it.
+\AddToHook{shipout/background}{%
+  \put(40,-14){\headerfont\bfseries\fontsize{8pt}{1em}\selectfont\parseronly{Daniil Chalov}}%
+}
+
+% The first page also carries the contact details. The LinkedIn URL, because parsers read the text layer, not link
+% targets, and the header shows only the handle. The email, because its icon extracts as an envelope emoji, and
+% OpenResume drops the space after it: "🖂cyber.barrista@gmail.com".
+\AddToHookNext{shipout/background}{%
+  \put(40,-24){\headerfont\fontsize{8pt}{1em}\selectfont\parseronly{linkedin.com/in/cyber-barrista}}%
+  \put(40,-34){\headerfont\fontsize{8pt}{1em}\selectfont\parseronly{cyber.barrista@gmail.com}}%
+}

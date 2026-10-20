@@ -9,7 +9,7 @@ one file per feature.
 
 - `flake.nix` declares inputs and evaluates flake-parts with `import-tree ./modules` — every `.nix` file under
   `modules/` is a flake-parts module, auto-imported. There are **no import lists**; adding a feature = dropping a file.
-- Shared values are typed `perSystem` options declared by the module that owns them (`config.tex.*` in `tex.nix`,
+- Shared values are typed `perSystem` options declared by the module that owns them (`config.tex.*` in `tex/`,
   `config.node.*` in `node.nix`, `config.pdfRenderer` in `renderer/`), read lexically by the feature files.
   Never thread them through `specialArgs`.
 - **Assets live next to their module** (`resume/*.tex`, `cover-letter/template.tex`, the whole web app under
@@ -23,12 +23,13 @@ one file per feature.
 
 | Path | Owns |
 |---|---|
-| `modules/tex.nix` | `tex.texlive`, `tex.deps` (awesome-cv + dracula, pinned by hash), `tex.env` (fonts, `TEXINPUTS`) |
+| `modules/tex/` | `tex.texlive`, `tex.deps` (awesome-cv, patched for the text layer, + dracula, pinned by hash), `tex.env` (`OSFONTDIR`, `TEXINPUTS`) |
 | `modules/node.nix` | `node.nodejs`, `node.pnpm` (nixpkgs' pnpm; asserts `renderer/package.json`'s `packageManager` matches) |
-| `modules/resume/` | `packages.resume`: the PDF itself (not a directory), from `resume.tex` + section files |
-| `modules/cover-letter/` | `packages.cover-letter`: shell CLI (yq + xelatex) filling `template.tex` from a YAML |
+| `modules/resume/` | `packages.resume`: the PDF itself (not a directory), from `resume.tex` + section files; `parser-only.tex`: text only parsers see (see Resume checks) |
+| `modules/cover-letter/` | `packages.cover-letter`: shell CLI (yq + lualatex) filling `template.tex` from a YAML |
 | `modules/renderer/` | `packages.pdf-renderer` (the PDF-agnostic app) and `pdfRenderer { pdf, fileName, downloadName, title }` → static site (also `legacyPackages.pdfRenderer` for other flakes); `checks.renderer`; the Vite app, `pnpm-lock.yaml`, `pnpm-workspace.yaml` (pnpm settings) |
 | `modules/site.nix` | `packages.site` = `pdfRenderer { pdf = packages.resume; ... }` with the resume's names, also `packages.default` |
+| `modules/resume-checks/` | checks on the built PDF (see Resume checks): `checks.vale` and `checks.languagetool` (`prose.nix`, `vale.ini`, `vocabulary.txt`), `checks.openresume` (`openresume/`: OpenResume's parser against `expected.json`) |
 | `modules/dev-shell.nix` | `nix develop`: TeX + Node toolchains with `tex.env` exported |
 | `.github/workflows/pr.yml` | every PR: `nix flake check` and a `nix build .#site` that proves the site builds |
 | `.github/workflows/main.yml` | pushes to `main`: build and deploy to GitHub Pages, skipped when the live site already has this build (see Deploy) |
@@ -44,7 +45,7 @@ one file per feature.
   leave `packageManager` alone (pnpm follows nixpkgs) and to keep `@types/node` on Node's major. A Renovate PR that
   changes `pnpm-lock.yaml` needs the `fetchPnpmDeps` hash refreshed before it can go green.
 - No git hooks (no husky): `nix flake check` and CI run format, lint and typecheck (`pnpm format:check`, `pnpm lint`,
-  `pnpm typecheck` in the dev shell).
+  `pnpm typecheck` in the dev shell), and the resume checks.
 - **Flakes only see git-tracked files.** `git add` new files before `nix build`, or nix reports them missing.
 - **After changing npm dependencies**, update the `fetchPnpmDeps` hash in `renderer/default.nix`: set it to `""`,
   build, copy the hash from the mismatch error. One hash covers every system because pnpm's lockfile has an integrity
@@ -54,14 +55,16 @@ one file per feature.
 - **Node stays on 26** (`node.nix`): with nixpkgs' node 24.15 a fresh `pnpm install` on macOS dies with SIGKILL
   (EXC_GUARD, a double-closed file descriptor in pnpm's extraction).
 - TeX documents resolve the class and theme through `TEXINPUTS` (`tex.env`), not `\input@path`; the dev shell exports
-  it, so `xelatex modules/resume/resume.tex` works from anywhere.
+  it, so `lualatex modules/resume/resume.tex` works from anywhere. luaotfload, which does not read fontconfig, finds
+  Source Sans 3 through `OSFONTDIR` (texlive has only the older Source Sans Pro) and caches font names under `HOME`.
 
 | Task | Command |
 |---|---|
 | Resume PDF | `nix build .#resume` |
 | Cover letter | `nix run .#cover-letter -- letter.yaml [out.pdf]` |
 | Site | `nix build .#site` (`result/index.html`); the bare app: `nix build .#pdf-renderer` |
-| Checks (format, lint, typecheck in a sandbox) | `nix flake check` |
+| Checks, sandboxed (renderer format, lint, typecheck; resume checks) | `nix flake check` |
+| One check and its findings | `nix build .#checks.aarch64-darwin.vale -L` (or `languagetool`, `openresume`, `renderer`) |
 | Renderer dev loop | `cd modules/renderer`, any PDF at `public/document.pdf`, `pnpm dev` |
 | Format Nix | `nix fmt` |
 
@@ -80,6 +83,48 @@ one file per feature.
   Renovate understands and bumps. Bump them deliberately.
 - One-time prerequisite still pending: switch the repository's Pages source from the `main` branch to
   GitHub Actions (Settings → Pages), or the deploy job fails.
+
+## Text layer
+
+What a PDF extracts as (parsers, search, copy-paste) is not what it shows, and both documents are judged on it. It is
+set up by configuration only; keep it that way.
+
+- **LuaLaTeX, not XeLaTeX.** XeLaTeX (xdvipdfmx) extracts Source Sans 3's hyphen as U+2011 and small caps as capitals
+  with a stray lowercase i ("ENGiNEER"), with no TeX-level control: `\XeTeXgenerateactualtext` only helps poppler,
+  while pdf.js ignores ActualText and loses the spaces between words.
+- **luaotfload's node mode for text, HarfBuzz for small caps** (`tex.deps` patches awesome-cv's
+  `Renderer=HarfBuzz` to `Renderer=Node, SmallCapsFeatures={Renderer=HarfBuzz}`). Node mode extracts hyphens as "-"
+  but small caps as capitals ("SOFTWARE ENGINEER"); HarfBuzz mode extracts small caps in the case they were typed but
+  a typed "-" as a soft hyphen. So a hyphen inside small caps (subsection titles, entry positions, the header's
+  position line, the footer) is typed as U+2011 ("Non‑tech"), which HarfBuzz keeps.
+- **Header icons extract as characters** (the envelope as an emoji). pdf.js puts a space between icon and email, but
+  OpenResume drops it and reads "🖂cyber.barrista@gmail.com", so `parser-only.tex` also carries the email.
+- LuaTeX dates `\today` by `SOURCE_DATE_EPOCH`, which stdenv and `nix develop` pin to 1980: the builds unset it.
+- `resume.tex` never breaks a line at a typed hyphen (`\exhyphenpenalty`): extractors cannot tell it from TeX's own
+  hyphenation, so "well-" at a line end comes out as "wellrounded" or "well- rounded". It keeps every `\cvsection`
+  heading with its first lines (`needspace`): a stranded heading has the page footer between it and its section in
+  reading order.
+- Typography that extracts right: ``` ``…'' ``` for quotes, `--` for ranges (dates).
+
+## Resume checks
+
+- They read the built PDF, not the `.tex` sources: what TeX produces (quote marks, small caps, the class's header and
+  footer) is what a reader or an ATS gets. `main.yml` runs `nix flake check` before deploying, so a failing resume
+  check blocks the deploy.
+- Vale fails on error-level alerts only (warnings and suggestions are printed); LanguageTool (LTeX+'s CLI) fails on
+  any finding; OpenResume fails on any `expected.json` string it parses differently (case-insensitive).
+- Content meant for parsers and not readers goes in `modules/resume/parser-only.tex`, never in the visible sections:
+  invisible text (PDF rendering mode 3), placed through the `shipout/background` hook so the rendered pages stay
+  pixel-identical and it comes first in each page's content stream. It holds the name on every page and the LinkedIn
+  URL and email on the first; its comments say why each is needed.
+- `vocabulary.txt` feeds both Vale and LanguageTool, and takes only correctly spelled words: listing a word makes Vale
+  flag its other casings (`Vale.Terms`), and LanguageTool's dictionary is case-sensitive.
+- OpenResume is AGPL-3.0, so it is fetched at build time, never vendored; it is unmaintained since 2024-10. Its one
+  runtime dependency, `pdfjs-dist`, is the single npm tarball its lockfile resolves (no lockfile here), and
+  `@reduxjs/toolkit` is stubbed. One parser's heuristics, not a real ATS: section titles must be bold uppercase or
+  contain a keyword (experience, education, skill, ...), job titles must contain a listed word in its exact case
+  ("Engineer"), locations must be a US "City, ST" (so `expected.json` has none), and pages are joined with no line
+  break.
 
 ## Code style (renderer)
 

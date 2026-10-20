@@ -1,0 +1,39 @@
+# Correctly spelled words the Vale and LanguageTool dictionaries lack, one per line.
+# Read by prose.nix. Only words that are right belong here: a misspelling (Gitlab for GitLab) stays a finding,
+# and Vale reports a wrong-case use of a word listed here (Vale.Terms).
+
+# Technologies
+Akka
+Ansible
+Doobie
+DynamoDB
+Fortran
+GitLab
+Jira
+Kanban
+Keras
+Ktor
+MediaPipe
+MUI
+OAuth
+ONNX
+PureScript
+scikit-learn
+
+# Industry terms
+APIs
+architecting
+fintech
+gameplay
+
+# Names
+Chalov
+cyber-barrista
+Daniil
+Klarna
+
+# Other words, capitalised as the resume uses them (entries are case-sensitive)
+bicircular
+Bouldering
+Metalcore
+Onboarding

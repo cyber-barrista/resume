@@ -20,7 +20,8 @@ jobs:
       # pinned by commit: the action publishes only major tags (v23), which can move
       - uses: DeterminateSystems/nix-installer-action@3138316df39ed29be04236d7ffc686fa525866aa # v23
 
-      # Format, lint and typecheck of the renderer (modules/renderer/default.nix).
+      # Format, lint and typecheck of the renderer (modules/renderer/default.nix), and
+      # the resume's prose and parse checks (modules/resume-checks/).
       - run: nix flake check -L
 
       # The deployable site must build on every PR; what main.yml would deploy
