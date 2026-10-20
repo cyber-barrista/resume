@@ -10,16 +10,14 @@
   "lockFileMaintenance": {
     "enabled": true
   },
+  "nix": {
+    "enabled": true
+  },
   "packageRules": [
     {
       "digest": {
         "enabled": false
       }
-    },
-    {
-      "description": "pnpm comes from nixpkgs: modules/node.nix asserts that packageManager matches it, so it moves with `nix flake update`, never with Renovate",
-      "matchDepTypes": ["packageManager"],
-      "enabled": false
     },
     {
       "description": "Node is pinned to 26 in modules/node.nix; keep its types on the same major",

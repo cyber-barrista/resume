@@ -24,7 +24,7 @@ one file per feature.
 | Path | Owns |
 |---|---|
 | `modules/tex/` | `tex.texlive`, `tex.deps` (awesome-cv, patched for the text layer, + dracula, pinned by hash), `tex.env` (`OSFONTDIR`, `TEXINPUTS`) |
-| `modules/node.nix` | `node.nodejs`, `node.pnpm` (nixpkgs' pnpm; asserts `renderer/package.json`'s `packageManager` matches) |
+| `modules/node.nix` | `node.nodejs`, `node.pnpm` (nixpkgs' pnpm; `renderer/package.json` has no `packageManager` on purpose) |
 | `modules/resume/` | `packages.resume`: the PDF itself (not a directory), from `resume.tex` + section files; `parser-only.tex`: text only parsers see (see Resume checks) |
 | `modules/cover-letter/` | `packages.cover-letter`: shell CLI (yq + lualatex) filling `template.tex` from a YAML |
 | `modules/renderer/` | `packages.pdf-renderer` (the PDF-agnostic app) and `pdfRenderer { pdf, fileName, downloadName, title }` → static site (also `legacyPackages.pdfRenderer` for other flakes); `checks.renderer`; the Vite app, `pnpm-lock.yaml`, `pnpm-workspace.yaml` (pnpm settings) |
@@ -38,12 +38,13 @@ one file per feature.
 ## Toolchain
 
 - Run every tool through the dev shell: `nix develop -c ...`. The flake pins Node, pnpm and TeX; when a version
-  drifts, bump the flake instead of using a global binary. `node.nix` asserts that `packageManager` in
-  `renderer/package.json` matches nixpkgs' pnpm, so a nixpkgs bump that moves pnpm means updating that field too.
+  drifts, bump the flake instead of using a global binary. pnpm's version is nixpkgs' alone: `renderer/package.json`
+  carries no `packageManager` field, so neither corepack nor Renovate has anything to pin, and `pnpm-workspace.yaml`
+  sets `minimumReleaseAge: 0` (pnpm 11 would otherwise reject packages younger than a day at build time).
 - Pin dependencies to exact versions (`pnpm add --save-exact`); Renovate runs with `rangeStrategy: pin` and opens
-  one grouped PR a month (npm packages and GitHub Actions; `flake.lock` and the TeX pins are manual). It is told to
-  leave `packageManager` alone (pnpm follows nixpkgs) and to keep `@types/node` on Node's major. A Renovate PR that
-  changes `pnpm-lock.yaml` needs the `fetchPnpmDeps` hash refreshed before it can go green.
+  one grouped PR a month: npm packages, GitHub Actions and, with the `nix` manager enabled, the `flake.lock` inputs
+  (the TeX pins are manual). It is told to keep `@types/node` on Node's major. A Renovate PR that changes
+  `pnpm-lock.yaml` or moves nixpkgs' pnpm needs the `fetchPnpmDeps` hash refreshed before it can go green.
 - No git hooks (no husky): `nix flake check` and CI run format, lint and typecheck (`pnpm format:check`, `pnpm lint`,
   `pnpm typecheck` in the dev shell), and the resume checks.
 - **Flakes only see git-tracked files.** `git add` new files before `nix build`, or nix reports them missing.
