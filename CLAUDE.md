@@ -24,10 +24,10 @@ one file per feature.
 | Path | Owns |
 |---|---|
 | `modules/tex/` | `tex.texlive`, `tex.deps` (awesome-cv, patched for the text layer, + dracula, pinned by hash), `tex.env` (`OSFONTDIR`, `TEXINPUTS`) |
-| `modules/node.nix` | `node.nodejs`, `node.pnpm` (nixpkgs' pnpm; asserts `renderer/package.json`'s `packageManager` matches) |
+| `modules/node.nix` | `node.nodejs`, `node.pnpm` (nixpkgs' pnpm; `renderer/package.json` has no `packageManager` on purpose) |
 | `modules/resume/` | `packages.resume`: the PDF itself (not a directory), from `resume.tex` + section files; `parser-only.tex`: text only parsers see (see Resume checks) |
 | `modules/cover-letter/` | `packages.cover-letter`: shell CLI (yq + lualatex) filling `template.tex` from a YAML |
-| `modules/renderer/` | `packages.pdf-renderer` (the PDF-agnostic app) and `pdfRenderer { pdf, fileName, downloadName, title }` → static site (also `legacyPackages.pdfRenderer` for other flakes); `checks.renderer`; the Vite app, `pnpm-lock.yaml`, `pnpm-workspace.yaml` (pnpm settings) |
+| `modules/renderer/` | `packages.pdf-renderer` (the PDF-agnostic app) and `pdfRenderer { pdf, fileName, downloadName, title }` → static site (also `legacyPackages.pdfRenderer` for other flakes); `checks.renderer`; the Vite app, `pnpm-lock.yaml` (what Nix builds node_modules from, through pnpm2nix-pure), `pnpm-workspace.yaml` (pnpm settings for the local dev loop only) |
 | `modules/site.nix` | `packages.site` = `pdfRenderer { pdf = packages.resume; ... }` with the resume's names, also `packages.default` |
 | `modules/resume-checks/` | checks on the built PDF (see Resume checks): `checks.vale` and `checks.languagetool` (`prose.nix`, `vale.ini`, `vocabulary.txt`), `checks.openresume` (`openresume/`: OpenResume's parser against `expected.json`) |
 | `modules/dev-shell.nix` | `nix develop`: TeX + Node toolchains with `tex.env` exported |
@@ -38,20 +38,25 @@ one file per feature.
 ## Toolchain
 
 - Run every tool through the dev shell: `nix develop -c ...`. The flake pins Node, pnpm and TeX; when a version
-  drifts, bump the flake instead of using a global binary. `node.nix` asserts that `packageManager` in
-  `renderer/package.json` matches nixpkgs' pnpm, so a nixpkgs bump that moves pnpm means updating that field too.
+  drifts, bump the flake instead of using a global binary. pnpm's version is nixpkgs' alone: `renderer/package.json`
+  carries no `packageManager` field, so neither corepack nor Renovate has anything to pin. `pnpm-workspace.yaml`
+  sets `minimumReleaseAge: 0` so a local `pnpm install` accepts a lockfile Renovate bumped minutes ago (pnpm 11
+  would otherwise reject packages younger than a day); the Nix install passes `--trust-lockfile`, which skips that
+  check. Both give up pnpm's cool-down against a just-published compromised version.
 - Pin dependencies to exact versions (`pnpm add --save-exact`); Renovate runs with `rangeStrategy: pin` and opens
-  one grouped PR a month (npm packages and GitHub Actions; `flake.lock` and the TeX pins are manual). It is told to
-  leave `packageManager` alone (pnpm follows nixpkgs) and to keep `@types/node` on Node's major. A Renovate PR that
-  changes `pnpm-lock.yaml` needs the `fetchPnpmDeps` hash refreshed before it can go green.
+  one grouped PR a month: npm packages, GitHub Actions and, with the `nix` manager enabled, the `flake.lock` inputs
+  (the TeX pins are manual). It is told to keep `@types/node` on Node's major. A Renovate PR needs no hand work:
+  Nix builds node_modules from the lockfile itself (below), so there is no dependency hash to refresh.
 - No git hooks (no husky): `nix flake check` and CI run format, lint and typecheck (`pnpm format:check`, `pnpm lint`,
   `pnpm typecheck` in the dev shell), and the resume checks.
 - **Flakes only see git-tracked files.** `git add` new files before `nix build`, or nix reports them missing.
-- **After changing npm dependencies**, update the `fetchPnpmDeps` hash in `renderer/default.nix`: set it to `""`,
-  build, copy the hash from the mismatch error. One hash covers every system because pnpm's lockfile has an integrity
-  hash for every package and `supportedArchitectures` in `renderer/pnpm-workspace.yaml` makes every install fetch the
-  binaries for exactly the flake's four systems (so a local `pnpm install` also brings the Linux ones, ~1 GB store).
-  Do not let the fetcher's default `--force` back in: it pulls every platform on npm (~2 GB) — `--no-force` wins.
+- **No dependency hash to maintain.** `renderer/default.nix` builds node_modules with pnpm2nix-pure (a non-flake
+  input, imported from its `nix/`): one fixed-output fetch per tarball keyed by the `integrity` in `pnpm-lock.yaml`,
+  then `pnpm install --offline --trust-lockfile`. After changing npm dependencies, `pnpm install` and commit the
+  lockfile; that is all. Only `package.json` is staged for the install (not `pnpm-workspace.yaml`). The cost: the
+  lockfile lists every platform's optional binaries and all of them are fetched, most of a roughly 850 MB download
+  of which the four flake systems need about a quarter, because pnpm picks the platform only at install time. On
+  Linux the prebuilt binaries are patched with `autoPatchelfHook` inside the node_modules derivation.
 - **Node stays on 26** (`node.nix`): with nixpkgs' node 24.15 a fresh `pnpm install` on macOS dies with SIGKILL
   (EXC_GUARD, a double-closed file descriptor in pnpm's extraction).
 - TeX documents resolve the class and theme through `TEXINPUTS` (`tex.env`), not `\input@path`; the dev shell exports

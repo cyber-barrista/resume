@@ -13,6 +13,16 @@
     # (x86_64/aarch64 × linux/darwin), overridable from a consuming
     # flake with `inputs.resume.inputs.systems.follows = "systems"`.
     systems.url = "github:nix-systems/default";
+    # Builds node_modules from pnpm-lock.yaml, one fetch per tarball keyed by
+    # the lockfile's own integrity hash, so no hash of the whole dependency
+    # set has to be kept in step with the lockfile (nixpkgs' fetchPnpmDeps
+    # needs one, and Renovate cannot compute it). Fetched as plain source
+    # (`flake = false`): its nix/ is imported directly and its own inputs
+    # stay out of this lock.
+    pnpm2nix = {
+      url = "github:mnixry/pnpm2nix-pure";
+      flake = false;
+    };
   };
 
   outputs =

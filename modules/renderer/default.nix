@@ -1,4 +1,9 @@
-{ lib, flake-parts-lib, ... }:
+{
+  inputs,
+  lib,
+  flake-parts-lib,
+  ...
+}:
 
 let
   package = lib.importJSON ./package.json;
@@ -47,42 +52,50 @@ in
         );
       };
 
-      # After changing dependencies: `pnpm install`, then set `hash` to ""
-      # and copy the value from the resulting hash-mismatch error. The lockfile
-      # has an integrity hash for every package, and `supportedArchitectures` in
-      # pnpm-workspace.yaml makes pnpm fetch the platform-specific binaries
-      # (biome, rolldown, typescript, ...) for exactly the systems this flake
-      # builds for, whatever the build host, so this one hash covers them all.
-      # nixpkgs' fetcher reaches the same goal with `--force`, which pulls
-      # *every* platform on npm (~2 GB here); `--no-force` wins over it.
-      pnpmDeps = pkgs.fetchPnpmDeps {
-        inherit (package) version;
-        pname = package.name;
-        inherit src pnpm;
-        fetcherVersion = 3;
-        pnpmInstallFlags = [ "--no-force" ];
-        hash = "sha256-mOm0qHprJHDhb3ez5nJ3VgxVhkLbyM9B3yZfJEO9sTg=";
-      };
+      # node_modules straight from the lockfile (pnpm2nix-pure, see flake.nix):
+      # every tarball is its own fixed-output fetch keyed by the `integrity`
+      # the lockfile already carries, then `pnpm install --offline` against
+      # them. Nothing here needs updating when dependencies change. Only
+      # package.json is staged for the install, not pnpm-workspace.yaml, whose
+      # settings are for the local dev loop. One cost: the lockfile lists every
+      # platform's optional binaries and all of them are fetched (most of the
+      # download), since pnpm picks the platform only at install time.
+      pnpm2nix = pkgs.callPackage "${inputs.pnpm2nix}/nix/derivation.nix" { inherit nodejs pnpm; };
+      nodeModules =
+        (pnpm2nix.mkPnpmNodeModules {
+          inherit src;
+          name = "${package.name}-node-modules";
+        }).overrideAttrs
+          (old: {
+            # The prebuilt Linux binaries (biome, rolldown, ...) are linked
+            # against a system glibc that the sandbox does not have; the hook
+            # patches them in the output during fixup.
+            nativeBuildInputs =
+              old.nativeBuildInputs ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.autoPatchelfHook ];
+            buildInputs = lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.stdenv.cc.cc.lib ];
+            autoPatchelfIgnoreMissingDeps = [ "*" ];
+          });
 
-      # Source plus an offline `pnpm install`; `args` adds the phases.
+      # Source with the prebuilt node_modules linked in; `args` adds the phases.
+      # Before running a script, pnpm 11 checks node_modules against the
+      # lockfile and reinstalls on a mismatch. These were installed against the
+      # patched lockfile (local tarballs), so they always mismatch, and the
+      # reinstall fails on the read-only link: skip the check.
       mkPnpmDerivation =
         args:
         pkgs.stdenv.mkDerivation (
           {
-            inherit src pnpmDeps;
+            inherit src;
             nativeBuildInputs = [
               nodejs
               pnpm
-              pkgs.pnpmConfigHook
-            ]
-            # The prebuilt Linux binaries in node_modules (biome, rolldown, ...)
-            # are linked against a system glibc that the sandbox does not have.
-            ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.autoPatchelfHook ];
-            buildInputs = lib.optionals pkgs.stdenv.hostPlatform.isLinux [ pkgs.stdenv.cc.cc.lib ];
-            preBuild = lib.optionalString pkgs.stdenv.hostPlatform.isLinux ''
-              autoPatchelf node_modules
+            ];
+            configurePhase = ''
+              runHook preConfigure
+              export pnpm_config_verify_deps_before_run=false
+              ln -s ${nodeModules}/node_modules node_modules
+              runHook postConfigure
             '';
-            autoPatchelfIgnoreMissingDeps = [ "*" ];
           }
           // args
         );
