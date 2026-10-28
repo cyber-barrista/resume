@@ -11,12 +11,9 @@
         pnpm = lib.mkOption {
           type = lib.types.package;
           description = ''
-            pnpm from nixpkgs, the only pnpm this repo knows: package.json has
-            no `packageManager` field on purpose, so corepack and Renovate
-            have nothing to pin and the version moves with nixpkgs alone.
-            The lockfile carries an integrity hash for every package,
-            platform-specific optionals included, so `fetchPnpmDeps` needs
-            nothing beyond one hash (see renderer/default.nix).
+            pnpm from nixpkgs. package.json has no `packageManager` field on
+            purpose: corepack and Renovate have nothing to pin, so the version
+            moves with nixpkgs alone.
           '';
         };
       };

@@ -51,11 +51,28 @@
         "type": "github"
       }
     },
+    "pnpm2nix": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1790227413,
+        "narHash": "sha256-6YAZIC1+A0obCBNxk7gI2bGmmA/oXU38SbpyiCXuM7Q=",
+        "owner": "mnixry",
+        "repo": "pnpm2nix-pure",
+        "rev": "4826edd5cf0cc14faf359a94b53c479488c992cb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mnixry",
+        "repo": "pnpm2nix-pure",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "flake-parts": "flake-parts",
         "import-tree": "import-tree",
         "nixpkgs": "nixpkgs",
+        "pnpm2nix": "pnpm2nix",
         "systems": "systems"
       }
     },
