@@ -27,7 +27,14 @@
         ))
       ]);
 
-      ltexConfig = pkgs.writeText "ltex.json" (builtins.toJSON { dictionary.en-US = vocabulary; });
+      # NUMBERS_IN_WORDS is off: it flags library names with a digit inside (http4s, Smithy4s) even when the
+      # dictionary lists them, and a resume has no other use for the rule.
+      ltexConfig = pkgs.writeText "ltex.json" (
+        builtins.toJSON {
+          dictionary.en-US = vocabulary;
+          disabledRules.en-US = [ "NUMBERS_IN_WORDS" ];
+        }
+      );
     in
     {
       # Fails on error-level alerts (spelling, some proselint rules); warnings and suggestions are printed only.

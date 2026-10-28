@@ -5,19 +5,20 @@
 # Technologies
 Akka
 Ansible
-Doobie
 DynamoDB
-Fortran
+ClickHouse
 GitLab
+Grafana
 Jira
 Kanban
 Keras
 Ktor
-MediaPipe
-MUI
+http4s
+Nix
+Pekko
 OAuth
 ONNX
-PureScript
+Smithy4s
 scikit-learn
 
 # Industry terms
@@ -34,6 +35,6 @@ Klarna
 
 # Other words, capitalised as the resume uses them (entries are case-sensitive)
 bicircular
-Bouldering
-Metalcore
-Onboarding
+bouldering
+onboarding
+metalcore

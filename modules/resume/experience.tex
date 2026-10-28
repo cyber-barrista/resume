@@ -3,55 +3,44 @@
 \begin{cventries}
 
 	\cventry
-	{Full Stack Engineer, Backend Engineer}
+	{Backend Engineer}
 	{\href{https://www.linkedin.com/company/evolution-global}{Evolution}}
 	{\href{https://www.google.com/maps/place/Stockholm}{Stockholm, Sweden}}
 	{Dec 2024 -- Present}
 	{
 		\begin{cvitems}
-			\item {Maintained a general purpose gameplay runtime platform.}
-			\item {Developed a separate ``jackpot coordinator'' microservice.}
+			\item {Designed, from the architecture decision record up, and built the service through which in-house and third-party slot studios integrate with Evolution's platform: an event-sourced gateway to the wallet and data-warehouse pipeline with automatic reconciliation of unsettled rounds, carried through production sign-off with regulatory reporting for Portugal and the US. Scala 3, cats-effect, Pekko cluster, Kafka.}
+			\item {Co-own the jackpot service behind Evolution's slot games: rolled it out to four more production regions, added caching of jackpot balances and exchange rates, discrepancy alerting and a back-office UI for jackpot configuration that retired the legacy tool, and handled its live incidents.}
+			\item {Maintained the gameplay runtime for slot games, per-player state machines persisted to Kafka: fixed non-deterministic Kafka topic ownership, sped up the crawler that settles idle rounds, and retired a legacy provider integration across production regions.}
 		\end{cvitems}
 	}
 
 
 	\cventry
-	{Software Architect, Software Engineer}
+	{Software Engineer}
 	{\href{https://www.linkedin.com/company/klarna/}{Klarna}}
 	{\href{https://www.google.com/maps/place/Stockholm}{Stockholm, Sweden}}
 	{Apr 2022 -- Dec 2024}
 	{
 		\begin{cvitems}
-			\item {Developed credit card-focused products.}
-			\item {Integrated APIs, compliance, and reporting systems with \href{https://www.linkedin.com/company/visa/}{Visa}.}
-			\item {Coordinated development planning across teams and departments.}
-			\item {Contributed to the growth and development of the internal \href{https://en.wikipedia.org/wiki/Scala_(programming_language)}{Scala} community and ecosystem.}
+			\item {Built Klarna Card (since past 6 million active users in 16 countries) on a platform handling 3 million transactions a day.}
+			\item {Owned the \href{https://www.linkedin.com/company/visa/}{Visa} integration end to end: settlement, disputes, compliance and regulatory reporting, and certification. It ran with few incidents.}
+			\item {Coordinated planning across 3--4 teams for the switch from one card issuer processor to another.}
+			\item {Grew the internal Scala ecosystem, mainly through shared libraries.}
 		\end{cvitems}
 	}
 
 
 	\cventry
-	{Software Architect, Software Engineer}
+	{Software Engineer}
 	{\href{https://www.linkedin.com/company/dsr-corporation/}{DSR Corporation}}
 	{\href{https://www.google.com/maps/place/Voronezh,+Voronezh+Oblast,+Russia}{Voronezh, Russian Federation}}
-	{Oct. 2019 -- Apr. 2022}
+	{Oct 2019 -- Apr 2022}
 	{
 		\begin{cvitems}
-			\item {Led the migration of petabytes of data from legacy \href{https://en.wikipedia.org/wiki/Hierarchical_storage_management}{HSM} to modern cloud infrastructure.}
-			\item {Developed a JVM-based autonomous service for seamless data transfer and management during the migration process.}
-			\item {Designed and implemented an on-premise development pipeline for the service, ensuring seamless deployment and operation within the organization's infrastructure.}
-		\end{cvitems}
-	}
-
-	\cventry
-	{Theoretical Physics Lab Assistant}
-	{\href{https://www.linkedin.com/school/\%D0\%B2\%D0\%BE\%D1\%80\%D0\%BE\%D0\%BD\%D0\%B5\%D0\%B6\%D1\%81\%D0\%BA\%D0\%B8\%D0\%B9-\%D0\%B3\%D0\%BE\%D1\%81\%D1\%83\%D0\%B4\%D0\%B0\%D1\%80\%D1\%81\%D1\%82\%D0\%B2\%D0\%B5\%D0\%BD\%D0\%BD\%D1\%8B\%D0\%B9-\%D1\%83\%D0\%BD\%D0\%B8\%D0\%B2\%D0\%B5\%D1\%80\%D1\%81\%D0\%B8\%D1\%82\%D0\%B5\%D1\%82}{Voronezh State University}}
-	{\href{https://www.google.com/maps/place/Voronezh,+Voronezh+Oblast,+Russia}{Voronezh, Russian Federation}}
-	{Jan. 2019 -- Oct. 2019}
-	{
-		\begin{cvitems}
-			\item {Developed computational programs to support research on \href{https://journals.aps.org/pra/abstract/10.1103/PhysRevA.106.033117}{``Coulomb effects in the high-energy part of above-threshold-ionization spectra in intense bicircular laser fields''}.}
-			\item {Applied \href{https://en.wikipedia.org/wiki/Functional_analysis}{functional analysis} techniques to enhance the mathematical rigor of theoretical physics research.}
+			\item {Led a team of five migrating 32 petabytes from a legacy hierarchical storage system to AWS S3 and Google Cloud Storage in parallel.}
+			\item {Built the Kotlin/JVM service that moved and tracked the data at about 200 TB per hour, on PostgreSQL and RabbitMQ.}
+			\item {Designed and implemented its on-premise deployment pipeline.}
 		\end{cvitems}
 	}
 
